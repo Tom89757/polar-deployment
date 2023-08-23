@@ -6,8 +6,10 @@ services:
     image: "catalog-service"
     container_name: "catalog-service"
     ports:
-      - 9001:9001
+      - "9001:9001"
+      - "5005:5005"
     environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - SPRING_DATASOURCE_URL=jdbc:postgresql://polar-postgres:5432/polardb_catalog
       - SPRING_PROFILES_ACTIVE=testdata
 
@@ -15,8 +17,8 @@ services:
     image: "postgres:14.9"
     container_name: "polar-postgres"
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
-      - POSTGRES_UESR=ft
+      - POSTGRES_USER=ft
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=polardb_catalog
