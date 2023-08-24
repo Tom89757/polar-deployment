@@ -18,9 +18,9 @@ spec:
           image: postgres:14.9
           env:
             - name: POSTGRES_USER
-              value: user
+              value: ft
             - name: POSTGRES_PASSWORD
-              value: password 
+              value: 123456
             - name: POSTGRES_DB
               value: polardb_catalog
           resources:
@@ -32,7 +32,6 @@ spec:
               memory: 120Mi
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -44,6 +43,6 @@ spec:
   selector:
     db: polar-postgres
   ports:
-  - protocol: TCP
-    port: 5432
-    targetPort: 5432
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
