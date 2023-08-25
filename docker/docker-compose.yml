@@ -21,6 +21,5 @@ services:
     environment:
       - POSTGRES_USER=ft
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=polardb_catalog
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
