@@ -81,7 +81,7 @@ services:
     container_name: "polar-keycloak"
     command: start-dev
     environment:
-      - KEYCLOAK_ADMIN=user
-      - KEYCLOAK_ADMIN_PASSWORD=password
+      - KEYCLOAK_ADMIN=ft
+      - KEYCLOAK_ADMIN_PASSWORD=123456
     ports:
       - 8080:8080
