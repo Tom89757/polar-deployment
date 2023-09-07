@@ -91,7 +91,7 @@ services:
     volumes:
       - ./keycloak:/opt/keycloak/data/import
     environment:
-      - KEYCLOAK_ADMIN=ft
-      - KEYCLOAK_ADMIN_PASSWORD=123456
+      - KEYCLOAK_ADMIN=user
+      - KEYCLOAK_ADMIN_PASSWORD=password
     ports:
       - 8080:8080
