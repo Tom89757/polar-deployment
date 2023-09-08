@@ -5,19 +5,24 @@ services:
       - fluent-bit
       - polar-keycloak
       - polar-postgres
+      - tempo
     image: "catalog-service"
     container_name: "catalog-service"
     ports:
       - "9001:9001"
       - "8001:8001"
     environment:
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8001
+      # - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8001
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.17.0.jar
+      - OTEL_SERVICE_NAME=catalog-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      - OTEL_METRICS_EXPORTER=none
       - SPRING_DATASOURCE_URL=jdbc:postgresql://polar-postgres:5432/polardb_catalog
       - SPRING_PROFILES_ACTIVE=testdata
     logging:
       driver: fluentd
       options:
-        fluentd-address: 127.0.0.1/24224
+        fluentd-address: 127.0.0.1:24224
 
   config-service:
     image: "config-service"
@@ -42,8 +47,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=ft
-      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -107,6 +112,8 @@ services:
     container_name: grafana
     depends_on:
       - loki
+      - prometheus
+      - tempo
     ports:
       - "3000:3000"
     environment:
@@ -134,3 +141,21 @@ services:
       - LOKI_URI=http://loki:3100/loki/api/v1/push
     volumes:
       - ./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  tempo:
+    image: grafana/tempo:1.5.0
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100" # Tempo
+      - "4317:4317" # OTel
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo-config.yml
